@@ -33,13 +33,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-      ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Text(widget.title)],
+          ),
+          leading: IconButton(
+            onPressed: () {
+              // TODO: Open Filters Menu
+            },
+            icon: const Icon(Icons.menu),
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  // TODO: Open Search Screen
+                },
+                icon: const Icon(Icons.search))
+          ]),
       body: const Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -55,10 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
 MaterialColor createMaterialColor(Color color) {
   List<int> strengths = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
   Map<int, Color> swatch = <int, Color>{};
-  final int r = color.red, g = color.green, b = color.blue;
+  final int red = color.red, green = color.green, blue = color.blue;
 
   for (int strength in strengths) {
-    swatch[strength] = Color.fromRGBO(r, g, b, 1.0);
+    swatch[strength] = Color.fromRGBO(red, green, blue, 1.0);
   }
 
   return MaterialColor(color.value, swatch);
