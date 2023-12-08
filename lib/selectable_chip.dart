@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
 class SelectableChip extends StatelessWidget {
+  final String textLabel;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const SelectableChip({super.key, required this.isSelected, required this.onTap});
+  final Color chipColor = const Color(0xFF453944);
+
+  const SelectableChip(
+      {super.key,
+      required this.textLabel,
+      required this.isSelected,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -12,17 +19,18 @@ class SelectableChip extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: FilterChip(
         label: Text(
-          'Chip $isSelected',
-          style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF453944)),
+          textLabel,
+          style: TextStyle(color: isSelected ? Colors.white : chipColor),
         ),
         selected: isSelected,
         onSelected: (bool selected) => onTap(),
-        backgroundColor: isSelected ? const Color(0xFF453944) : Colors.transparent,
-        selectedColor: const Color(0xFF453944),
+        backgroundColor: isSelected ? chipColor : Colors.transparent,
+        selectedColor: chipColor,
+        checkmarkColor: Colors.white,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(
-            color: Color(0xFF453944),
-            width: 1.5,
+          side: BorderSide(
+            color: isSelected ? Colors.transparent : chipColor,
+            width: 1,
           ),
           borderRadius: BorderRadius.circular(24),
         ),
@@ -31,6 +39,7 @@ class SelectableChip extends StatelessWidget {
   }
 }
 
+/**
 class SelectableChipsRow extends StatefulWidget {
   const SelectableChipsRow({super.key});
 
@@ -58,4 +67,4 @@ class SelectableChipsRowState extends State<SelectableChipsRow> {
       ),
     );
   }
-}
+}*/
