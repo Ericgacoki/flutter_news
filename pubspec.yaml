@@ -34,6 +34,7 @@ flutter:
     - assets/icons/search.svg
     - assets/images/test_news_image.png
     - assets/images/wallpaper.jpg
+    - assets/images/profile.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
