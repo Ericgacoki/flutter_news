@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:top_modal_sheet/top_modal_sheet.dart';
 
 import '../components/news_item.dart';
 import '../components/selectable_chip.dart';
@@ -61,8 +62,16 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [Text(widget.pageTitle)],
           ),
           leading: IconButton(
-              onPressed: () {
-                // TODO: Open Filters Menu
+              onPressed: () async {
+               var value = await showTopModalSheet<String?>(
+                  context,
+                  Container(
+                    height: 250,
+                    width: double.maxFinite,
+                    color:const Color(0xFF453944),
+                  ),
+                );
+                setState(() {});
               },
               icon: SvgPicture.asset('assets/icons/filter.svg')),
           actions: [
@@ -108,6 +117,15 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               NewsItem(
+                isBookMarked: true,
+                imageUrl: "assets/images/test_news_image.png",
+                title: 'Shocking as Kenya is set to be sold to China!',
+                source: "MLB Trade Rumors",
+                publishedAt: "Today",
+                authors: ["Quinn Parker", "Ethan James"],
+              ),
+              NewsItem(
+                isBookMarked: false,
                 imageUrl: "assets/images/wallpaper.jpg",
                 title:
                     'Republican Sen Tim Scott suspends presidential campaign',
@@ -115,15 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 publishedAt: "2 days ago",
                 authors: ["Leika Kihara", "Ethan James", "Quinn Parker"],
               ),
-
-              NewsItem(
-                imageUrl: "assets/images/test_news_image.png",
-                title:
-                    'Shocking as Kenya is set to be sold to Chinese!',
-                source: "Reuters",
-                publishedAt: "Today",
-                authors: ["Quinn Parker", "Ethan James"],
-              )
             ],
           )
         ],
