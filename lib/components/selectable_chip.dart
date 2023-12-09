@@ -17,7 +17,7 @@ class SelectableChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: FilterChip(
+      child: FilterChip( // TODO: Replace this with a custom Chip - Use container
         label: Text(
           textLabel,
           style: TextStyle(color: isSelected ? Colors.white : chipColor),
@@ -38,33 +38,3 @@ class SelectableChip extends StatelessWidget {
     );
   }
 }
-
-/**
-class SelectableChipsRow extends StatefulWidget {
-  const SelectableChipsRow({super.key});
-
-  @override
-  SelectableChipsRowState createState() => SelectableChipsRowState();
-}
-
-class SelectableChipsRowState extends State<SelectableChipsRow> {
-  int selectedChipIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        5,
-        (index) => SelectableChip(
-          isSelected: selectedChipIndex == index,
-          onTap: () {
-            setState(() {
-              selectedChipIndex = index;
-            });
-          },
-        ),
-      ),
-    );
-  }
-}*/
