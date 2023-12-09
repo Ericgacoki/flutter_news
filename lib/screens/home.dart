@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:news_api/selectable_chip.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../components/news_item.dart';
+import '../components/selectable_chip.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const NewsApiApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NewsApiApp extends StatelessWidget {
+  const NewsApiApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: customColor,
       ),
-      home: const MyHomePage(pageTitle: 'Headlines'),
+      home: const MyHomePage(pageTitle: 'Top Headlines'),
     );
   }
 }
@@ -59,35 +61,36 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [Text(widget.pageTitle)],
           ),
           leading: IconButton(
-            onPressed: () {
-              // TODO: Open Filters Menu
-            },
-            icon: SvgPicture.asset('assets/icons/filter.svg')
-          ),
+              onPressed: () {
+                // TODO: Open Filters Menu
+              },
+              icon: SvgPicture.asset('assets/icons/filter.svg')),
           actions: [
             IconButton(
                 onPressed: () {
                   // TODO: Open Search Screen
                 },
-                icon:  SvgPicture.asset('assets/icons/search.svg'))
+                icon: SvgPicture.asset('assets/icons/search.svg'))
           ]),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: categoriesMap.entries.map((entry) {
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: categoriesMap.entries.map(
+                (entry) {
                   return SelectableChip(
                     textLabel: entry.value,
                     isSelected: selectedCategoryKey == entry.key,
                     onTap: () {
-                      /** 
-                       If this chip isn't the selected one...
-                       update Headlines data just before updating the selected state
-                       This way, the update operation will only happen once and nothing
-                       will happen if this chip is clicked multiple times. 
-                      **/
+                      /**
+                          If this chip isn't the selected one...
+                          update Headlines data just before updating the selected state
+                          This way, the update operation will only happen once and nothing
+                          will happen if this chip is clicked multiple times.
+                       **/
                       if (entry.key != selectedCategoryKey) {
                         // TODO: Update Headlines data to match this category
                       }
@@ -97,8 +100,32 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   );
-                }).toList(),
-              ))
+                },
+              ).toList(),
+            ),
+          ),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              NewsItem(
+                imageUrl: "assets/images/wallpaper.jpg",
+                title:
+                    'Republican Sen Tim Scott suspends presidential campaign',
+                source: "CNN",
+                publishedAt: "2 days ago",
+                authors: ["Leika Kihara", "Ethan James", "Quinn Parker"],
+              ),
+
+              NewsItem(
+                imageUrl: "assets/images/test_news_image.png",
+                title:
+                    'Shocking as Kenya is set to be sold to Chinese!',
+                source: "Reuters",
+                publishedAt: "Today",
+                authors: ["Quinn Parker", "Ethan James"],
+              )
+            ],
+          )
         ],
       ),
     );
