@@ -10,7 +10,7 @@ class AdItem extends StatelessWidget {
     return Container(
         height: 150,
         width: 300,
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(left: 8, right: 4, top: 4, bottom: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           image: const DecorationImage(
@@ -29,7 +29,7 @@ class AdItem extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     color: const Color(0xFF453944).withOpacity(.8),
-                    borderRadius: const BorderRadius.all(Radius.circular(4))),
+                    borderRadius: const BorderRadius.all(Radius.circular(8))),
                 child: const Text("Ad",
                     style: TextStyle(
                         fontSize: 13,
@@ -38,13 +38,17 @@ class AdItem extends StatelessWidget {
               ),
             ),
             Container(
-              height: 40,
-              alignment: Alignment.center,
+              height: 60,
+              alignment: Alignment.bottomCenter,
               decoration: BoxDecoration(
-                color: const Color(0xFF453944).withOpacity(.6),
+                gradient: LinearGradient(colors: [
+                  Colors.transparent,
+                  const Color(0xFF453944).withOpacity(.5),
+                  const Color(0xFF453944),
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                 borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12)),
+                    bottomLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8)),
               ),
               child: const Padding(
                 padding: EdgeInsets.all(12),
