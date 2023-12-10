@@ -1,70 +1,60 @@
 import 'package:flutter/material.dart';
 
+// TODO: Try Video Ads 💀
 class AdItem extends StatelessWidget {
-  const AdItem({super.key});
+  const AdItem({super.key, required this.imageUrl});
 
-  // TODO: Add required fields
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 150,
-        width: 300,
-        margin: const EdgeInsets.only(left: 8, right: 4, top: 4, bottom: 4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          image: const DecorationImage(
-              image: AssetImage("assets/images/wallpaper.jpg"),
-              fit: BoxFit.cover),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Container(
-                height: 24,
-                width: 24,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: const Color(0xFF453944).withOpacity(.8),
-                    borderRadius: const BorderRadius.all(Radius.circular(8))),
-                child: const Text("Ad",
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400)),
-              ),
-            ),
-            Container(
-              height: 60,
-              alignment: Alignment.bottomCenter,
+      height: 124,
+      width: double.maxFinite,
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(image: AssetImage(imageUrl), fit: BoxFit.cover),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ad text
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Container(
+              height: 24,
+              width: 24,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Colors.transparent,
-                  const Color(0xFF453944).withOpacity(.5),
-                  const Color(0xFF453944),
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(8),
-                    bottomRight: Radius.circular(8)),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(12),
-                child: Text(
-                  "Get 30% Mockup discount",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  color: const Color(0xFF453944).withOpacity(.8),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
+              child: const Text("Ad",
                   style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                ),
-              ),
-            )
-          ],
-        ),
+                      fontWeight: FontWeight.w400)),
+            ),
+          ),
+
+          // Cancel button (requires premium)
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Container(
+              height: 24,
+              width: 24,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(24))),
+              child: Icon(
+                  Icons.cancel_rounded,
+                  color: const Color(0xFF453944).withOpacity(.8)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
