@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class NewsItem extends StatelessWidget {
   const NewsItem(
       {super.key,
+      required this.isBookMarked,
       required this.imageUrl,
       required this.title,
       required this.source,
@@ -12,7 +13,7 @@ class NewsItem extends StatelessWidget {
   /// TODO: Use these fields after fetching the actual data
   final String imageUrl, title, source, publishedAt;
   final List<String> authors;
-  final bool isBookMarked = false;
+  final bool isBookMarked;
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +133,8 @@ class NewsItem extends StatelessWidget {
                         children: [
                           Text(
                             source,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.w400),
                           ),
@@ -145,8 +148,10 @@ class NewsItem extends StatelessWidget {
                           const SizedBox(width: 12),
                           Text(
                             publishedAt,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w300),
+                                fontSize: 10, fontWeight: FontWeight.w400),
                           )
                         ],
                       )
@@ -162,7 +167,9 @@ class NewsItem extends StatelessWidget {
                       onPressed: () {
                         //TODO: Add/Remove news item to/from bookmarks
                       },
-                      icon: const Icon(Icons.bookmark_add_outlined)),
+                      icon: Icon(isBookMarked
+                          ? Icons.bookmark
+                          : Icons.bookmark_add_outlined)),
                   const SizedBox(width: 12),
                   IconButton(
                       onPressed: () {
