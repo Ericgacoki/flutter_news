@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:top_modal_sheet/top_modal_sheet.dart';
 
+import '../components/ad_item.dart';
 import '../components/news_item.dart';
 import '../components/selectable_chip.dart';
 
@@ -38,7 +39,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final Map<String, String> categoriesMap;
-  late String selectedCategoryKey;
+  late String selectedNewsCategoryKey;
+
+  final ScrollController listViewController = ScrollController();
+  final ScrollController chipScrollController = ScrollController();
 
   _MyHomePageState()
       : categoriesMap = {
@@ -50,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           "health": "Health",
           "general": "General",
         } {
-    selectedCategoryKey = categoriesMap.entries.first.key;
+    selectedNewsCategoryKey = categoriesMap.entries.first.key;
   }
 
   @override
@@ -63,15 +67,21 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           leading: IconButton(
               onPressed: () async {
-               var value = await showTopModalSheet<String?>(
+                await showTopModalSheet<String?>(
                   context,
                   Container(
-                    height: 250,
+                    margin: const EdgeInsets.only(
+                        top: 50, left: 12, right: 12, bottom: 24),
+                    alignment: Alignment.topLeft,
                     width: double.maxFinite,
-                    color:const Color(0xFF453944),
+                    child: Column(
+                      children: List.generate(
+                          10, (index) => (Text("Hello ${index + 1}"))),
+
+                      // REMEMBER: Proceed from here! [Sun Dec 10, 2023]
+                    ),
                   ),
                 );
-                setState(() {});
               },
               icon: SvgPicture.asset('assets/icons/filter.svg')),
           actions: [
@@ -81,18 +91,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 icon: SvgPicture.asset('assets/icons/search.svg'))
           ]),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        controller: listViewController,
+        scrollDirection: Axis.vertical,
         children: <Widget>[
           SingleChildScrollView(
+            controller: chipScrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
               children: categoriesMap.entries.map(
                 (entry) {
                   return SelectableChip(
                     textLabel: entry.value,
-                    isSelected: selectedCategoryKey == entry.key,
+                    isSelected: selectedNewsCategoryKey == entry.key,
                     onTap: () {
                       /**
                           If this chip isn't the selected one...
@@ -100,12 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           This way, the update operation will only happen once and nothing
                           will happen if this chip is clicked multiple times.
                        **/
-                      if (entry.key != selectedCategoryKey) {
+                      if (entry.key != selectedNewsCategoryKey) {
                         // TODO: Update Headlines data to match this category
                       }
 
                       setState(() {
-                        selectedCategoryKey = entry.key;
+                        selectedNewsCategoryKey = entry.key;
                       });
                     },
                   );
@@ -113,28 +124,24 @@ class _MyHomePageState extends State<MyHomePage> {
               ).toList(),
             ),
           ),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              NewsItem(
-                isBookMarked: true,
-                imageUrl: "assets/images/test_news_image.png",
-                title: 'Shocking as Kenya is set to be sold to China!',
-                source: "MLB Trade Rumors",
-                publishedAt: "Today",
-                authors: ["Quinn Parker", "Ethan James"],
-              ),
-              NewsItem(
-                isBookMarked: false,
-                imageUrl: "assets/images/wallpaper.jpg",
-                title:
-                    'Republican Sen Tim Scott suspends presidential campaign',
-                source: "CNN",
-                publishedAt: "2 days ago",
-                authors: ["Leika Kihara", "Ethan James", "Quinn Parker"],
-              ),
-            ],
-          )
+          const NewsItem(
+            isBookMarked: true,
+            imageUrl: "assets/images/test_news_image.png",
+            title: 'Shocking as Kenya is set to be sold to China!',
+            source: "MLB Trade Rumors",
+            publishedAt: "Today",
+            authors: ["Quinn Parker", "Ethan James"],
+          ),
+          const AdItem(imageUrl: "assets/images/wallpaper.jpg"),
+          const NewsItem(
+            isBookMarked: false,
+            imageUrl: "assets/images/wallpaper.jpg",
+            title: 'Republican Sen Tim Scott suspends presidential campaign',
+            source: "CNN",
+            publishedAt: "2 days ago",
+            authors: ["Leia Kiara", "Ethan James", "Quinn Parker"],
+          ),
+          const AdItem(imageUrl: "assets/images/wallpaper.jpg")
         ],
       ),
     );
