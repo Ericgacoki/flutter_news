@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 class NewsItem extends StatelessWidget {
   const NewsItem(
       {super.key,
+      required this.isBookMarked,
       required this.imageUrl,
       required this.title,
       required this.source,
       required this.publishedAt,
-      required this.authors});
+      required this.author});
 
-  /// TODO: Use these fields after fetching the actual data
-  final String imageUrl, title, source, publishedAt;
-  final List<String> authors;
-  final bool isBookMarked = false;
+  final String imageUrl, title, source, publishedAt, author;
+  final bool isBookMarked;
 
   @override
   Widget build(BuildContext context) {
@@ -23,45 +22,53 @@ class NewsItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Article image, shade, title
-          Container(
-            height: 220,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              image: DecorationImage(
-                  image: AssetImage(imageUrl), fit: BoxFit.cover),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 100,
-                  alignment: Alignment.bottomLeft,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      Colors.transparent,
-                      const Color(0xFF453944).withOpacity(.5),
-                      const Color(0xFF453944),
-                    ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(24),
-                        bottomRight: Radius.circular(24)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
+          GestureDetector(
+            onTap: () {
+              // TODO: Open details screen
+            },
+            child: Container(
+              height: 220,
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                image: DecorationImage(
+                    image: AssetImage(imageUrl), fit: BoxFit.cover),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 100,
+                    alignment: Alignment.bottomLeft,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            const Color(0xFF453944).withOpacity(.5),
+                            const Color(0xFF453944),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter),
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(24),
+                          bottomRight: Radius.circular(24)),
                     ),
-                  ),
-                )
-              ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
 
@@ -79,14 +86,14 @@ class NewsItem extends StatelessWidget {
                     width: 56,
                     child: Stack(
                       children: [
-                        // TODO: Add outline to the stacked containers
                         Positioned(
                           left: 0,
                           child: Container(
                             height: 32,
                             width: 32,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 2, color: Colors.white),
+                              image: const DecorationImage(
                                 image: AssetImage("assets/images/profile.png"),
                               ),
                               shape: BoxShape.circle,
@@ -98,11 +105,12 @@ class NewsItem extends StatelessWidget {
                           child: Container(
                             height: 32,
                             width: 32,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(width: 2, color: Colors.white),
+                              image: const DecorationImage(
                                 image: AssetImage("assets/images/profile.png"),
                               ),
-                              shape: BoxShape.circle,
                             ),
                           ),
                         ),
@@ -111,8 +119,11 @@ class NewsItem extends StatelessWidget {
                           child: Container(
                             height: 32,
                             width: 32,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.white),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border:
+                                    Border.all(width: 2, color: Colors.white)),
                             child: const Center(child: Text("+2")),
                           ),
                         )
@@ -124,7 +135,7 @@ class NewsItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authors[0],
+                        author,
                         style: const TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w400),
                       ),
@@ -132,6 +143,8 @@ class NewsItem extends StatelessWidget {
                         children: [
                           Text(
                             source,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.w400),
                           ),
@@ -145,8 +158,10 @@ class NewsItem extends StatelessWidget {
                           const SizedBox(width: 12),
                           Text(
                             publishedAt,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.w300),
+                                fontSize: 10, fontWeight: FontWeight.w400),
                           )
                         ],
                       )
@@ -162,7 +177,9 @@ class NewsItem extends StatelessWidget {
                       onPressed: () {
                         //TODO: Add/Remove news item to/from bookmarks
                       },
-                      icon: const Icon(Icons.bookmark_add_outlined)),
+                      icon: Icon(isBookMarked
+                          ? Icons.bookmark
+                          : Icons.bookmark_add_outlined)),
                   const SizedBox(width: 12),
                   IconButton(
                       onPressed: () {

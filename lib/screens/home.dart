@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:top_modal_sheet/top_modal_sheet.dart';
 
+import '../components/ad_item.dart';
 import '../components/news_item.dart';
 import '../components/selectable_chip.dart';
 
@@ -11,14 +13,14 @@ void main() {
 class NewsApiApp extends StatelessWidget {
   const NewsApiApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of your app.
   @override
   Widget build(BuildContext context) {
     MaterialColor customColor = createMaterialColor(const Color(0xFF453944));
 
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
+        fontFamily: 'Lato',
         primarySwatch: customColor,
       ),
       home: const MyHomePage(pageTitle: 'Top Headlines'),
@@ -37,7 +39,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final Map<String, String> categoriesMap;
-  late String selectedCategoryKey;
+  late String selectedNewsCategoryKey;
+
+  final ScrollController listViewController = ScrollController();
+  final ScrollController chipScrollController = ScrollController();
 
   _MyHomePageState()
       : categoriesMap = {
@@ -49,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           "health": "Health",
           "general": "General",
         } {
-    selectedCategoryKey = categoriesMap.entries.first.key;
+    selectedNewsCategoryKey = categoriesMap.entries.first.key;
   }
 
   @override
@@ -61,8 +66,118 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [Text(widget.pageTitle)],
           ),
           leading: IconButton(
-              onPressed: () {
-                // TODO: Open Filters Menu
+              onPressed: () async {
+                await showTopModalSheet<String?>(
+                  context,
+                  Container(
+                    margin: const EdgeInsets.only(
+                        top: 50, left: 16, right: 16, bottom: 24),
+                    alignment: Alignment.topLeft,
+                    width: double.maxFinite,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.arrow_back)),
+                            const SizedBox(width: 30),
+                            const Text(
+                              "Filter what you see",
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Lato'),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Source",
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Lato'),
+                        ),
+                        const Text(
+                          "News categories will not be available if you select specific source(s)",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Lato'),
+                        ),
+
+                        const SizedBox(height: 150),
+                        // TODO: Add flow layout with checkable chips here
+
+                        const Text(
+                          "Country",
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Lato'),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Sources will be ignored if you select a specific country",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Lato'),
+                        ),
+
+                        // Drop down and Clear button
+                        const SizedBox(
+                          height: 12,
+                        ),
+/*
+                        GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                            ),
+                            itemCount: 2,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                  margin: EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(16.0),
+                                  color: Colors.blue,
+                                  // Replace with your desired container color
+                                  child: Center(
+                                    child: Text(
+                                      'Container ${index + 1}',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ));
+                            }),*/
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 200,
+                              height: 40,
+                              color: Colors.blue,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(right: 12, left: 8),
+                              child: MaterialButton(
+                                color: const Color(0XFFF5ECF4),
+                                onPressed: () {},
+                                child: const Text(
+                                  "Clear Selection",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
               },
               icon: SvgPicture.asset('assets/icons/filter.svg')),
           actions: [
@@ -72,18 +187,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 icon: SvgPicture.asset('assets/icons/search.svg'))
           ]),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        controller: listViewController,
+        scrollDirection: Axis.vertical,
         children: <Widget>[
           SingleChildScrollView(
+            controller: chipScrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
               children: categoriesMap.entries.map(
                 (entry) {
                   return SelectableChip(
                     textLabel: entry.value,
-                    isSelected: selectedCategoryKey == entry.key,
+                    isSelected: selectedNewsCategoryKey == entry.key,
                     onTap: () {
                       /**
                           If this chip isn't the selected one...
@@ -91,12 +207,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           This way, the update operation will only happen once and nothing
                           will happen if this chip is clicked multiple times.
                        **/
-                      if (entry.key != selectedCategoryKey) {
+                      if (entry.key != selectedNewsCategoryKey) {
                         // TODO: Update Headlines data to match this category
                       }
-
                       setState(() {
-                        selectedCategoryKey = entry.key;
+                        selectedNewsCategoryKey = entry.key;
                       });
                     },
                   );
@@ -104,28 +219,25 @@ class _MyHomePageState extends State<MyHomePage> {
               ).toList(),
             ),
           ),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              NewsItem(
-                imageUrl: "assets/images/wallpaper.jpg",
-                title:
-                    'Republican Sen Tim Scott suspends presidential campaign',
-                source: "CNN",
-                publishedAt: "2 days ago",
-                authors: ["Leika Kihara", "Ethan James", "Quinn Parker"],
-              ),
-
-              NewsItem(
-                imageUrl: "assets/images/test_news_image.png",
-                title:
-                    'Shocking as Kenya is set to be sold to Chinese!',
-                source: "Reuters",
-                publishedAt: "Today",
-                authors: ["Quinn Parker", "Ethan James"],
-              )
-            ],
-          )
+          const NewsItem(
+            isBookMarked: true,
+            imageUrl: "assets/images/customers.jpg",
+            title:
+                'Experts raise concerns about U.S. commitment to GPS modernization',
+            source: "MLB Trade Rumors",
+            publishedAt: "Today",
+            author: "Quinn Parker",
+          ),
+          const AdItem(imageUrl: "assets/images/phone_ad.jpg"),
+          const NewsItem(
+            isBookMarked: false,
+            imageUrl: "assets/images/wallpaper.jpg",
+            title: 'Crypto lawyer wants to depose Changpeng',
+            source: "CNN",
+            publishedAt: "2 days ago",
+            author: "Leia Kiara",
+          ),
+          const AdItem(imageUrl: "assets/images/spotify_ad.png"),
         ],
       ),
     );
