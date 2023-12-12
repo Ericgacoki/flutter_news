@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:top_modal_sheet/top_modal_sheet.dart';
+import 'package:news_api/components/checkable_source_chip.dart';
+import 'package:news_api/screens/search.dart';
 
 import '../components/ad_item.dart';
 import '../components/news_item.dart';
 import '../components/selectable_chip.dart';
+import '../components/top_sheet.dart';
 
-void main() {
-  runApp(const NewsApiApp());
-}
+void main() => runApp(const NewsApiApp());
 
 class NewsApiApp extends StatelessWidget {
   const NewsApiApp({super.key});
 
-  // This widget is the root of your app.
   @override
   Widget build(BuildContext context) {
     MaterialColor customColor = createMaterialColor(const Color(0xFF453944));
-
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Lato',
         primarySwatch: customColor,
       ),
-      home: const MyHomePage(pageTitle: 'Top Headlines'),
+      home: const SearchScreen()// MyHomePage(pageTitle: 'Top Headlines'),
     );
   }
 }
@@ -39,7 +37,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final Map<String, String> categoriesMap;
-  late String selectedNewsCategoryKey;
+  late String selectedNewsCategoryId;
+  late List<String> selectedSourcesIds;
+
+  final Map<String, String> allSources = {
+    // TODO: Update this map with the correct sources
+    "bbc-news": "BBC News",
+    "reuters": "Reuters",
+    "axios": "Axios",
+    "Android": "Android",
+    "iOS": "iOS",
+    "Linux": "Linux",
+    "This is Windows": "This is Windows"
+  };
 
   final ScrollController listViewController = ScrollController();
   final ScrollController chipScrollController = ScrollController();
@@ -54,7 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
           "health": "Health",
           "general": "General",
         } {
-    selectedNewsCategoryKey = categoriesMap.entries.first.key;
+    selectedNewsCategoryId = categoriesMap.entries.first.key;
+    selectedSourcesIds = [];
   }
 
   @override
@@ -67,11 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           leading: IconButton(
               onPressed: () async {
-                await showTopModalSheet<String?>(
+                await showTopSheet(
                   context,
                   Container(
                     margin: const EdgeInsets.only(
-                        top: 50, left: 16, right: 16, bottom: 24),
+                        top: 54, left: 16, right: 16, bottom: 24),
                     alignment: Alignment.topLeft,
                     width: double.maxFinite,
                     child: Column(
@@ -81,14 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         Row(
                           children: [
                             IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
                                 icon: const Icon(Icons.arrow_back)),
                             const SizedBox(width: 30),
                             const Text(
                               "Filter what you see",
                               style: TextStyle(
                                   fontSize: 24,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w500,
                                   fontFamily: 'Lato'),
                             )
                           ],
@@ -104,14 +117,32 @@ class _MyHomePageState extends State<MyHomePage> {
                         const Text(
                           "News categories will not be available if you select specific source(s)",
                           style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Lato'),
                         ),
+                        const SizedBox(height: 12),
 
-                        const SizedBox(height: 150),
-                        // TODO: Add flow layout with checkable chips here
+                        // TODO: Bug Alert!! The isChecked state is not being updated as expected!
+                        Wrap(
+                          runSpacing: 8,
+                          children: allSources.entries.map((entry) {
+                            return CheckableSourceChip(
+                                onTap: (id) => {
+                                      setState(() {
+                                        selectedSourcesIds.contains(id)
+                                            ? selectedSourcesIds.remove(id)
+                                            : selectedSourcesIds.add(id);
+                                      })
+                                    },
+                                id: entry.key,
+                                title: entry.value,
+                                isChecked:
+                                    selectedSourcesIds.contains(entry.key));
+                          }).toList(),
+                        ),
 
+                        const SizedBox(height: 16),
                         const Text(
                           "Country",
                           style: TextStyle(
@@ -119,64 +150,43 @@ class _MyHomePageState extends State<MyHomePage> {
                               fontWeight: FontWeight.w500,
                               fontFamily: 'Lato'),
                         ),
-                        const SizedBox(height: 8),
                         const Text(
                           "Sources will be ignored if you select a specific country",
                           style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Lato'),
                         ),
 
                         // Drop down and Clear button
                         const SizedBox(
-                          height: 12,
+                          height: 16,
                         ),
-/*
-                        GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                            ),
-                            itemCount: 2,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                  margin: EdgeInsets.all(8.0),
-                                  padding: EdgeInsets.all(16.0),
-                                  color: Colors.blue,
-                                  // Replace with your desired container color
-                                  child: Center(
-                                    child: Text(
-                                      'Container ${index + 1}',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ));
-                            }),*/
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 200,
-                              height: 40,
-                              color: Colors.blue,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(right: 12, left: 8),
-                              child: MaterialButton(
-                                color: const Color(0XFFF5ECF4),
-                                onPressed: () {},
-                                child: const Text(
-                                  "Clear Selection",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            )
+                        const DropdownMenu(
+                          label: Text("Select country"),
+                          initialSelection: "NS", // TODO: "Hoist" this state.
+                          dropdownMenuEntries: [
+                            DropdownMenuEntry(
+                                value: "NS", label: "Not Specified"),
+                            DropdownMenuEntry(
+                                value: "US", label: "🇺🇸   United States"),
+                            DropdownMenuEntry(
+                                value: "UK", label: "🇬🇧   United Kingdom"),
+                            DropdownMenuEntry(
+                                value: "GE", label: "🇩🇪   Germany"),
+                            DropdownMenuEntry(
+                                value: "NG", label: "🇳🇬   Nigeria"),
+                            DropdownMenuEntry(
+                                value: "TZ", label: "🇹🇿   Tanzania")
                           ],
                         )
                       ],
                     ),
                   ),
+                ).then(
+                  (result) => {
+                    // Sheet dismissed with null result
+                  },
                 );
               },
               icon: SvgPicture.asset('assets/icons/filter.svg')),
@@ -195,11 +205,12 @@ class _MyHomePageState extends State<MyHomePage> {
             controller: chipScrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
+              // TODO: Hide these categories if "source" has been specified...(as per API docs)
               children: categoriesMap.entries.map(
                 (entry) {
                   return SelectableChip(
                     textLabel: entry.value,
-                    isSelected: selectedNewsCategoryKey == entry.key,
+                    isSelected: selectedNewsCategoryId == entry.key,
                     onTap: () {
                       /**
                           If this chip isn't the selected one...
@@ -207,11 +218,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           This way, the update operation will only happen once and nothing
                           will happen if this chip is clicked multiple times.
                        **/
-                      if (entry.key != selectedNewsCategoryKey) {
-                        // TODO: Update Headlines data to match this category
+                      if (entry.key != selectedNewsCategoryId) {
+                        // TODO: Fetch Headlines data in this category
                       }
                       setState(() {
-                        selectedNewsCategoryKey = entry.key;
+                        selectedNewsCategoryId = entry.key;
                       });
                     },
                   );
