@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_api/components/search_history_item.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -47,6 +48,11 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: searchInputController,
               onSubmitted: (value) {
                 // TODO: Perform Search
+                setState(() {
+                  recentSearches.contains(value)
+                      ? null
+                      : recentSearches.add(value);
+                });
               },
               decoration: const InputDecoration(
                   hintText: "Search news",
@@ -71,8 +77,21 @@ class _SearchScreenState extends State<SearchScreen> {
               spacing: 12,
               runSpacing: 8,
               children: recentSearches.map((item) {
-                // TODO: Return removable recently searched item
-                return Text(item);
+                return SearchHistoryItem(
+                  title: item,
+                  onTap: (title) {
+                    setState(() {
+                      searchInputController.text = title;
+                      // TODO: Perform Search
+                    });
+                  },
+                  onTapDelete: (title) {
+                    // TODO: delete this recently searched item
+                    setState(() {
+                      recentSearches.remove(title);
+                    });
+                  },
+                );
               }).toList(),
             ),
 
@@ -82,6 +101,9 @@ class _SearchScreenState extends State<SearchScreen> {
             GestureDetector(
               onTap: () => {
                 // TODO: Clear recent searches
+                setState(() {
+                  recentSearches.clear();
+                })
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
