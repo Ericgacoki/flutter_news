@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:news_api/components/checkable_source_chip.dart';
+import 'package:news_api/screens/details.dart';
 import 'package:news_api/screens/search.dart';
+import 'package:news_api/util/dummy_article_content.dart';
 
 import '../components/ad_item.dart';
 import '../components/news_item.dart';
@@ -21,7 +23,7 @@ class NewsApiApp extends StatelessWidget {
         fontFamily: 'Lato',
         primarySwatch: customColor,
       ),
-      home: const SearchScreen()// MyHomePage(pageTitle: 'Top Headlines'),
+      home: const MyHomePage(pageTitle: 'Top Headlines'),
     );
   }
 }
@@ -43,12 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final Map<String, String> allSources = {
     // TODO: Update this map with the correct sources
     "bbc-news": "BBC News",
+    "cnn": "CNN",
+    "espn": "ESPN",
     "reuters": "Reuters",
     "axios": "Axios",
-    "Android": "Android",
-    "iOS": "iOS",
-    "Linux": "Linux",
-    "This is Windows": "This is Windows"
+    "cnbc": "CNBC",
+    "abc-news": "ABC News",
   };
 
   final ScrollController listViewController = ScrollController();
@@ -193,7 +195,29 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             IconButton(
                 onPressed: () {
-                  // TODO: Open Search Screen
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const SearchScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOutQuart;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                 },
                 icon: SvgPicture.asset('assets/icons/search.svg'))
           ]),
@@ -216,7 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           If this chip isn't the selected one...
                           update Headlines data just before updating the selected state
                           This way, the update operation will only happen once and nothing
-                          will happen if this chip is clicked multiple times.
+                          will happen if this chip is clicked multiple times. Cool, right?
                        **/
                       if (entry.key != selectedNewsCategoryId) {
                         // TODO: Fetch Headlines data in this category
@@ -236,19 +260,21 @@ class _MyHomePageState extends State<MyHomePage> {
             title:
                 'Experts raise concerns about U.S. commitment to GPS modernization',
             source: "MLB Trade Rumors",
-            publishedAt: "Today",
+            publishedAt: "2023-12-10T00:00:00Z",
             author: "Quinn Parker",
+            content: content_1,
           ),
-          const AdItem(imageUrl: "assets/images/phone_ad.jpg"),
+          const AdItem(imageUrl: "assets/images/spotify_ad.png"),
           const NewsItem(
             isBookMarked: false,
             imageUrl: "assets/images/wallpaper.jpg",
             title: 'Crypto lawyer wants to depose Changpeng',
             source: "CNN",
-            publishedAt: "2 days ago",
+            publishedAt: "2023-12-09T00:00:00Z",
             author: "Leia Kiara",
+            content: content_1,
           ),
-          const AdItem(imageUrl: "assets/images/spotify_ad.png"),
+          const AdItem(imageUrl: "assets/images/phone_ad.jpg")
         ],
       ),
     );
