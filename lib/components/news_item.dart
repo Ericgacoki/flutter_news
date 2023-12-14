@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_api/screens/details.dart';
+import 'package:news_api/util/date.dart';
 
 class NewsItem extends StatelessWidget {
   const NewsItem(
@@ -8,9 +10,10 @@ class NewsItem extends StatelessWidget {
       required this.title,
       required this.source,
       required this.publishedAt,
-      required this.author});
+      required this.author,
+      required this.content});
 
-  final String imageUrl, title, source, publishedAt, author;
+  final String imageUrl, title, source, publishedAt, author, content;
   final bool isBookMarked;
 
   @override
@@ -24,7 +27,38 @@ class NewsItem extends StatelessWidget {
           // Article image, shade, title
           GestureDetector(
             onTap: () {
-              // TODO: Open details screen
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      DetailsScreen(
+                    isBookMarked: isBookMarked,
+                    imageUrl: imageUrl,
+                    title: title,
+                    source: source,
+                    publishedAt: publishedAt,
+                    author: author,
+                    content: content,
+                  ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOutQuart;
+
+                    final tween = Tween(begin: begin, end: end).chain(
+                      CurveTween(curve: curve),
+                    );
+
+                    var offsetAnimation = animation.drive(tween);
+
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                ),
+              );
             },
             child: Container(
               height: 220,
@@ -157,7 +191,7 @@ class NewsItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            publishedAt,
+                            formatRelativeDate(publishedAt),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
