@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:news_api/components/search_history_item.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -12,10 +13,13 @@ class _SearchScreenState extends State<SearchScreen> {
   var searchParam = "";
   final TextEditingController searchInputController = TextEditingController();
   List<String> recentSearches = [
-    "Latest",
-    "Happening now",
-    "Israel war",
-    "Dummy"
+    "Breaking News",
+    "Tech",
+    "Climate",
+    "Global Economy",
+    "Sports Highlights",
+    "Space",
+    "Cultural Events"
   ];
 
   @override
@@ -25,8 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // TODO: Uncomment this
-            // Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
         title: const Text(
@@ -42,40 +45,65 @@ class _SearchScreenState extends State<SearchScreen> {
             // Search bar,
             TextField(
               autofocus: true,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.start,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.search,
               controller: searchInputController,
               onSubmitted: (value) {
                 // TODO: Perform Search
-                setState(() {
-                  recentSearches.contains(value)
-                      ? null
-                      : recentSearches.add(value);
-                });
+                if (value.trim().isNotEmpty) {
+                  setState(() {
+                    recentSearches.contains(value)
+                        ? null
+                        : recentSearches.add(value);
+                  });
+                }
               },
-              decoration: const InputDecoration(
-                  hintText: "Search news",
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                  ),
-                  filled: true),
+              decoration: InputDecoration(
+                hintText: "Search news",
+                hintStyle: const TextStyle(fontSize: 16),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                filled: true,
+                suffixIcon: Wrap(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          // TODO: Perform Search
+                          if (searchInputController.value.text
+                              .trim()
+                              .isNotEmpty) {
+                            setState(() {
+                              recentSearches.contains(
+                                      searchInputController.value.text)
+                                  ? null
+                                  : recentSearches
+                                      .add(searchInputController.value.text);
+                            });
+                          }
+                        },
+                        icon: SvgPicture.asset('assets/icons/search.svg')),
+                    const SizedBox(width: 8)
+                  ],
+                ),
+              ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             const Text(
               "Recently Searched",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Search History Items
             Wrap(
               spacing: 12,
-              runSpacing: 8,
+              runSpacing: 12,
               children: recentSearches.map((item) {
                 return SearchHistoryItem(
                   title: item,
@@ -114,7 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     alignment: AlignmentDirectional.center,
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                        color: const Color(0xFF453944).withOpacity(.24),
+                        color: const Color(0xFF453944).withOpacity(.05),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(4))),
                     child: const Text(
