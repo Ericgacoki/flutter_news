@@ -15,17 +15,26 @@ class SearchHistoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTap(title),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 4, right: 4),
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text(title),
-            const SizedBox(width: 12),
-            IconButton(
-                onPressed: () => onTapDelete(title), icon: const Text("X")),
-            const SizedBox(width: 8)
-          ],
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          color: Color(0XFFF5ECF4),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const SizedBox(width: 4),
+              Text(title),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => onTapDelete(title),
+                child: const Text("X"),
+              ),
+              const SizedBox(width: 8),
+            ],
+          ),
         ),
       ),
     );
