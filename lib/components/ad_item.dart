@@ -44,6 +44,39 @@ class AdItem extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   // TODO: Show bottom sheet asking to upgrade to get rid of ads!
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        alignment: AlignmentDirectional.topCenter,
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(32),
+                                topRight: Radius.circular(32))),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            /** Used as drag handle */
+                            Container(
+                              margin: const EdgeInsets.all(12),
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8)),
+                                color: Colors.grey.withOpacity(.75),
+                              ),
+                            ),
+                            const Text(
+                              'Join premium to remove ads!',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   height: 24,
