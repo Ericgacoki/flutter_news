@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:news_api/components/checkable_source_chip.dart';
-import 'package:news_api/screens/details.dart';
 import 'package:news_api/screens/search.dart';
 import 'package:news_api/util/dummy_article_content.dart';
 
@@ -58,13 +57,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _MyHomePageState()
       : categoriesMap = {
+          "general": "General",
           "science": "Science",
           "technology": "Technology",
           "sports": "Sports",
           "entertainment": "Entertainment",
           "business": "Business",
           "health": "Health",
-          "general": "General",
         } {
     selectedNewsCategoryId = categoriesMap.entries.first.key;
     selectedSourcesIds = [];
