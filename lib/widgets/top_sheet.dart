@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-// TODO: Ask GPT to change this from a function to a Stateful Class.
-// Why -> Try to update the isChecked state of the chips hosted by this TopSheet
+// FIXME -> Try to update the isChecked state of the chips hosted by this TopSheet
 
 Future<T?> showTopSheet<T>(BuildContext context, Widget child,
     {bool barrierDismissible = true}) {
