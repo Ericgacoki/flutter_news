@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:news_api/components/search_history_item.dart';
+
+import '../widgets/search_history_item.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -52,10 +53,11 @@ class _SearchScreenState extends State<SearchScreen> {
               onSubmitted: (value) {
                 // TODO: Perform Search
                 if (value.trim().isNotEmpty) {
+                  String trimmedValue = value.trim();
                   setState(() {
-                    recentSearches.contains(value)
+                    recentSearches.contains(trimmedValue)
                         ? null
-                        : recentSearches.add(value);
+                        : recentSearches.add(trimmedValue);
                   });
                 }
               },
@@ -95,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
             const Text(
               "Recently Searched",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 16),

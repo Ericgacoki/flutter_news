@@ -1,48 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:news_api/components/checkable_source_chip.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:news_api/screens/search.dart';
-import 'package:news_api/util/dummy_article_content.dart';
 
-import '../components/ad_item.dart';
-import '../components/news_item.dart';
-import '../components/selectable_chip.dart';
-import '../components/top_sheet.dart';
+import '../util/dummy_article_content.dart';
+import '../widgets/ad_item.dart';
+import '../widgets/checkable_source_chip.dart';
+import '../widgets/news_item.dart';
+import '../widgets/selectable_chip.dart';
+import '../widgets/top_sheet.dart';
 
-void main() => runApp(const NewsApiApp());
-
-class NewsApiApp extends StatelessWidget {
-  const NewsApiApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    MaterialColor customColor = createMaterialColor(const Color(0xFF453944));
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Lato',
-        primarySwatch: customColor,
-      ),
-      home: const MyHomePage(pageTitle: 'Top Headlines'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.pageTitle});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key, required this.pageTitle});
 
   final String pageTitle;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   late final Map<String, String> categoriesMap;
   late String selectedNewsCategoryId;
   late List<String> selectedSourcesIds;
 
   final Map<String, String> allSources = {
-    // TODO: Update this map with the correct sources
     "bbc-news": "BBC News",
     "cnn": "CNN",
     "espn": "ESPN",
@@ -55,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final ScrollController listViewController = ScrollController();
   final ScrollController chipScrollController = ScrollController();
 
-  _MyHomePageState()
+  _HomeScreenState()
       : categoriesMap = {
           "general": "General",
           "science": "Science",
@@ -78,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [Text(widget.pageTitle)],
           ),
           leading: IconButton(
-              onPressed: () async {
-                await showTopSheet(
+              onPressed: () {
+                showTopSheet(
                   context,
                   Container(
                     margin: const EdgeInsets.only(
@@ -125,6 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         const SizedBox(height: 12),
 
                         // TODO: Bug Alert!! The isChecked state is not being updated as expected!
+                        // Try: Copy states an update them simultaneously. The state within this context/top-sheet
+                        // will be used to only update the UI
                         Wrap(
                           runSpacing: 8,
                           children: allSources.entries.map((entry) {
@@ -164,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 16,
                         ),
                         const DropdownMenu(
+                          requestFocusOnTap: false,
                           label: Text("Select country"),
                           initialSelection: "NS", // TODO: "Hoist" this state.
                           dropdownMenuEntries: [
@@ -184,10 +168,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                     ),
                   ),
-                ).then(
-                  (result) => {
-                    // Sheet dismissed with null result
-                  },
                 );
               },
               icon: SvgPicture.asset('assets/icons/filter.svg')),
@@ -266,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
           const AdItem(imageUrl: "assets/images/spotify_ad.png"),
           const NewsItem(
             isBookMarked: false,
-            imageUrl: "assets/images/wallpaper.jpg",
+            imageUrl: "assets/images/phone_ad.jpg",
             title: 'Crypto lawyer wants to depose Changpeng',
             source: "CNN",
             publishedAt: "2023-12-09T00:00:00Z",
@@ -278,17 +258,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-// Function to create a MaterialColor from a single color
-MaterialColor createMaterialColor(Color color) {
-  List<int> strengths = <int>[50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-  Map<int, Color> swatch = <int, Color>{};
-  final int red = color.red, green = color.green, blue = color.blue;
-
-  for (int strength in strengths) {
-    swatch[strength] = Color.fromRGBO(red, green, blue, 1.0);
-  }
-
-  return MaterialColor(color.value, swatch);
 }

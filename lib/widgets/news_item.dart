@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_api/screens/details.dart';
 import 'package:news_api/util/date.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsItem extends StatelessWidget {
   const NewsItem(
@@ -217,7 +218,7 @@ class NewsItem extends StatelessWidget {
                   const SizedBox(width: 12),
                   IconButton(
                       onPressed: () {
-                        //TODO: Open share bottom sheet
+                       // shareArticle(Uri());
                       },
                       icon: const Icon(Icons.share_outlined)),
                 ],
@@ -227,5 +228,13 @@ class NewsItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void shareArticle(Uri link) async {
+    // Check if the link is valid
+    if (await canLaunchUrl(link)) {
+      // Open the default share dialog
+      await launchUrl(link);
+    } else {}
   }
 }
