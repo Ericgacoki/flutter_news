@@ -106,8 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 12),
 
                         // TODO: Bug Alert!! The isChecked state is not being updated as expected!
-                        // Try: Copy states an update them simultaneously. The state within this context/top-sheet
-                        // will be used to only update the UI
                         Wrap(
                           runSpacing: 8,
                           children: allSources.entries.map((entry) {
