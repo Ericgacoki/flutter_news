@@ -35,12 +35,10 @@ flutter:
   assets:
     - assets/icons/filter.svg
     - assets/icons/search.svg
-    - assets/images/test_news_image.png
-    - assets/images/wallpaper.jpg
     - assets/images/profile.png
     - assets/images/phone_ad.jpg
-    - assets/images/customers.jpg
     - assets/images/spotify_ad.png
+    - assets/images/image_not_found.png
 
   fonts:
     - family: Lato
