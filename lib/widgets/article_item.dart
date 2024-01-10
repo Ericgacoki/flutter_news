@@ -4,6 +4,7 @@ import 'package:news_api/util/date.dart';
 import 'package:news_api/util/format_author.dart';
 
 import '../model/source.dart';
+import '../util/render_image.dart';
 
 class ArticleItem extends StatelessWidget {
   const ArticleItem(
@@ -20,13 +21,6 @@ class ArticleItem extends StatelessWidget {
   final String? imageUrl;
   final Source source;
   final bool isBookMarked;
-
-  ImageProvider<Object> _createImage(String? url) {
-    var img = (url != null)
-        ? NetworkImage(url)
-        : const AssetImage('assets/images/image_not_found.png');
-    return img as ImageProvider;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +72,7 @@ class ArticleItem extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 image: DecorationImage(
-                    image: _createImage(imageUrl), fit: BoxFit.cover),
+                    image: renderImage(imageUrl), fit: BoxFit.cover),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
