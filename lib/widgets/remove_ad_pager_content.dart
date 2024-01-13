@@ -9,7 +9,7 @@ class RemoveAdPagerContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.only(top: 12, bottom: 12),
       child: Center(
         child: Column(
           children: [
