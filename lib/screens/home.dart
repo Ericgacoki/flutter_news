@@ -29,27 +29,29 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> selectedSourcesIds = [];
   String selectedCountryId = "us";
 
-  Future<List<Article>?>? _articleFuture;
+  Future<List<Article>?>? _futureArticles;
 
   @override
   void initState() {
     super.initState();
-    _articleFuture = getArticles();
+    _futureArticles = getArticles();
   }
 
   String url = "$BASE_URL/top-headlines?country=us&apiKey=$api_key";
 
-  void urlFormatter({
+  void formatArticleUrl({
     required String? category,
     required String? country,
     required String? source,
   }) {
     setState(() {
       if (source != null) {
-        url =
-            "$BASE_URL/top-headlines?country=us&apiKey=$api_key"; // TODO: Fix URL
+        String sources = selectedSourcesIds.isNotEmpty
+            ? "${selectedSourcesIds.join(',')},$source"
+            : source;
+
+        url = "$BASE_URL/everything?sources=$sources&apiKey=$api_key";
       } else if (country != null) {
-        // set selected category to general
         setState(() {
           selectedNewsCategoryId = "general";
         });
@@ -65,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
         url = "$BASE_URL/top-headlines?country=us&apiKey=$api_key";
       }
 
-      _articleFuture = getArticles();
+      _futureArticles = getArticles();
     });
   }
 
@@ -176,6 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: allSources.entries.map((entry) {
                             return CheckableSourceChip(
                                 onTap: (id) => {
+                                      formatArticleUrl(
+                                          category: null,
+                                          country: null,
+                                          source: id),
                                       setState(() {
                                         selectedSourcesIds.contains(id)
                                             ? selectedSourcesIds.remove(id)
@@ -215,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           initialSelection: selectedCountryId,
                           onSelected: (value) {
                             selectedCountryId = value ?? "us";
-                            urlFormatter(
+                            formatArticleUrl(
                                 category: null,
                                 country: selectedCountryId,
                                 source: null);
@@ -267,7 +273,6 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: chipScrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
-              // TODO: Hide these categories if "source" has been specified...(as per API docs)
               children: categoriesMap.entries.map(
                 (entry) {
                   return SelectableChip(
@@ -275,10 +280,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     isSelected: selectedNewsCategoryId == entry.key,
                     onTap: () {
                       if (entry.key != selectedNewsCategoryId) {
-                        urlFormatter(
+                        formatArticleUrl(
                             category: entry.key, country: null, source: null);
                       }
-
                       setState(() {
                         selectedNewsCategoryId = entry.key;
                       });
@@ -290,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: FutureBuilder(
-                future: _articleFuture,
+                future: _futureArticles,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -300,6 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(child: Text('No articles available!'));
                   } else {
+                    // TODO: Add Ads in between???
                     return ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
