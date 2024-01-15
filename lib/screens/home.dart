@@ -178,11 +178,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: allSources.entries.map((entry) {
                             return CheckableSourceChip(
                                 onTap: (id) => {
+                                      Navigator.pop(context),
+                                      // Workaround the Bug mentioned above!
+
                                       formatArticleUrl(
                                           category: null,
                                           country: null,
                                           source: id),
+
                                       setState(() {
+                                        selectedNewsCategoryId = "general";
+
                                         selectedSourcesIds.contains(id)
                                             ? selectedSourcesIds.remove(id)
                                             : selectedSourcesIds.add(id);
