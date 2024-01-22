@@ -65,7 +65,7 @@ class _AdItemState extends State<AdItem> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
+                        children: <Widget>[
                           /** Used as drag handle */
                           Container(
                             margin: const EdgeInsets.all(12),

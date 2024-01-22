@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
+import 'package:news_api/data/countries.dart';
 import 'package:news_api/screens/search.dart';
 
-import '../util/dummy_article_content.dart';
-import '../widgets/ad_item.dart';
+import '../api_key.dart';
+import '../model/article.dart';
+import '../util/constants.dart';
+import '../widgets/article_item.dart';
 import '../widgets/checkable_source_chip.dart';
-import '../widgets/news_item.dart';
 import '../widgets/selectable_chip.dart';
 import '../widgets/top_sheet.dart';
 
@@ -20,8 +25,51 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final Map<String, String> categoriesMap;
-  late String selectedNewsCategoryId;
-  late List<String> selectedSourcesIds;
+  String selectedNewsCategoryId = "general";
+  List<String> selectedSourcesIds = [];
+  String selectedCountryId = "us";
+
+  Future<List<Article>?>? _futureArticles;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureArticles = getArticles();
+  }
+
+  String url = "$BASE_URL/top-headlines?country=us&apiKey=$api_key";
+
+  void formatArticleUrl({
+    required String? category,
+    required String? country,
+    required String? source,
+  }) {
+    setState(() {
+      if (source != null) {
+        String sources = selectedSourcesIds.isNotEmpty
+            ? "${selectedSourcesIds.join(',')},$source"
+            : source;
+
+        url = "$BASE_URL/everything?sources=$sources&apiKey=$api_key";
+      } else if (country != null) {
+        setState(() {
+          selectedNewsCategoryId = "general";
+        });
+        url = "$BASE_URL/top-headlines?country=$country&apiKey=$api_key";
+      } else if (category != null) {
+        if (category != "general") {
+          url =
+              "$BASE_URL/top-headlines?category=$category&language=en&apiKey=$api_key";
+        } else {
+          url = "$BASE_URL/top-headlines?country=us&apiKey=$api_key";
+        }
+      } else {
+        url = "$BASE_URL/top-headlines?country=us&apiKey=$api_key";
+      }
+
+      _futureArticles = getArticles();
+    });
+  }
 
   final Map<String, String> allSources = {
     "bbc-news": "BBC News",
@@ -48,6 +96,25 @@ class _HomeScreenState extends State<HomeScreen> {
         } {
     selectedNewsCategoryId = categoriesMap.entries.first.key;
     selectedSourcesIds = [];
+  }
+
+  Future<List<Article>> getArticles() async {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      if (data['status'] == 'ok' && data['articles'] != null) {
+        List<Article> articles = List.from(data['articles'])
+            .map((article) => Article.fromJson(article))
+            .toList();
+        return articles;
+      } else {
+        throw Exception('Invalid data format or missing articles key');
+      }
+    } else {
+      throw Exception('Failed to load articles');
+    }
   }
 
   @override
@@ -106,14 +173,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 12),
 
                         // TODO: Bug Alert!! The isChecked state is not being updated as expected!
-                        // Try: Copy states an update them simultaneously. The state within this context/top-sheet
-                        // will be used to only update the UI
                         Wrap(
                           runSpacing: 8,
                           children: allSources.entries.map((entry) {
                             return CheckableSourceChip(
                                 onTap: (id) => {
+                                      Navigator.pop(context),
+                                      // Workaround the Bug mentioned above!
+
+                                      formatArticleUrl(
+                                          category: null,
+                                          country: null,
+                                          source: id),
+
                                       setState(() {
+                                        selectedNewsCategoryId = "general";
+
                                         selectedSourcesIds.contains(id)
                                             ? selectedSourcesIds.remove(id)
                                             : selectedSourcesIds.add(id);
@@ -146,23 +221,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(
                           height: 16,
                         ),
-                        const DropdownMenu(
+                        DropdownMenu(
                           requestFocusOnTap: false,
-                          label: Text("Select country"),
-                          initialSelection: "NS", // TODO: "Hoist" this state.
+                          label: const Text("Select country"),
+                          initialSelection: selectedCountryId,
+                          onSelected: (value) {
+                            selectedCountryId = value ?? "us";
+                            formatArticleUrl(
+                                category: null,
+                                country: selectedCountryId,
+                                source: null);
+                          },
                           dropdownMenuEntries: [
-                            DropdownMenuEntry(
-                                value: "NS", label: "Not Specified"),
-                            DropdownMenuEntry(
-                                value: "US", label: "🇺🇸   United States"),
-                            DropdownMenuEntry(
-                                value: "UK", label: "🇬🇧   United Kingdom"),
-                            DropdownMenuEntry(
-                                value: "GE", label: "🇩🇪   Germany"),
-                            DropdownMenuEntry(
-                                value: "NG", label: "🇳🇬   Nigeria"),
-                            DropdownMenuEntry(
-                                value: "TZ", label: "🇹🇿   Tanzania")
+                            ...countriesData.entries.map((entry) =>
+                                DropdownMenuEntry(
+                                    value: entry.key, label: entry.value))
                           ],
                         )
                       ],
@@ -200,29 +273,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 icon: SvgPicture.asset('assets/icons/search.svg'))
           ]),
-      body: ListView(
-        controller: listViewController,
-        scrollDirection: Axis.vertical,
+      body: Column(
         children: <Widget>[
           SingleChildScrollView(
             controller: chipScrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
-              // TODO: Hide these categories if "source" has been specified...(as per API docs)
               children: categoriesMap.entries.map(
                 (entry) {
                   return SelectableChip(
                     textLabel: entry.value,
                     isSelected: selectedNewsCategoryId == entry.key,
                     onTap: () {
-                      /**
-                          If this chip isn't the selected one...
-                          update Headlines data just before updating the selected state
-                          This way, the update operation will only happen once and nothing
-                          will happen if this chip is clicked multiple times. Cool, right?
-                       **/
                       if (entry.key != selectedNewsCategoryId) {
-                        // TODO: Fetch Headlines data in this category
+                        formatArticleUrl(
+                            category: entry.key, country: null, source: null);
                       }
                       setState(() {
                         selectedNewsCategoryId = entry.key;
@@ -233,27 +298,37 @@ class _HomeScreenState extends State<HomeScreen> {
               ).toList(),
             ),
           ),
-          const NewsItem(
-            isBookMarked: true,
-            imageUrl: "assets/images/customers.jpg",
-            title:
-                'Experts raise concerns about U.S. commitment to GPS modernization',
-            source: "MLB Trade Rumors",
-            publishedAt: "2023-12-10T00:00:00Z",
-            author: "Quinn Parker",
-            content: content_1,
-          ),
-          const AdItem(imageUrl: "assets/images/spotify_ad.png"),
-          const NewsItem(
-            isBookMarked: false,
-            imageUrl: "assets/images/phone_ad.jpg",
-            title: 'Crypto lawyer wants to depose Changpeng',
-            source: "CNN",
-            publishedAt: "2023-12-09T00:00:00Z",
-            author: "Leia Kiara",
-            content: content_1,
-          ),
-          const AdItem(imageUrl: "assets/images/phone_ad.jpg")
+          Expanded(
+            child: FutureBuilder(
+                future: _futureArticles,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text('Check your internet connection!'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No articles available!'));
+                  } else {
+                    // TODO: Add Ads in between???
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        Article article = snapshot.data![index];
+                        return ArticleItem(
+                          isBookMarked: false,
+                          imageUrl: article.urlToImage,
+                          title: article.title,
+                          source: article.source,
+                          publishedAt: article.publishedAt,
+                          author: article.author,
+                          content: article.content,
+                        );
+                      },
+                    );
+                  }
+                }),
+          )
         ],
       ),
     );

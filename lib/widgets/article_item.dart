@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:news_api/screens/details.dart';
 import 'package:news_api/util/date.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:news_api/util/format_author.dart';
 
-class NewsItem extends StatelessWidget {
-  const NewsItem(
+import '../model/source.dart';
+import '../util/render_image.dart';
+
+class ArticleItem extends StatelessWidget {
+  const ArticleItem(
       {super.key,
       required this.isBookMarked,
       required this.imageUrl,
@@ -14,7 +17,9 @@ class NewsItem extends StatelessWidget {
       required this.author,
       required this.content});
 
-  final String imageUrl, title, source, publishedAt, author, content;
+  final String title, publishedAt, author, content;
+  final String? imageUrl;
+  final Source source;
   final bool isBookMarked;
 
   @override
@@ -67,7 +72,7 @@ class NewsItem extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 image: DecorationImage(
-                    image: AssetImage(imageUrl), fit: BoxFit.cover),
+                    image: renderImage(imageUrl), fit: BoxFit.cover),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -141,25 +146,15 @@ class NewsItem extends StatelessWidget {
                             height: 32,
                             width: 32,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(width: 2, color: Colors.white),
-                              image: const DecorationImage(
-                                image: AssetImage("assets/images/profile.png"),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 24,
-                          child: Container(
-                            height: 32,
-                            width: 32,
-                            decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.white,
                                 border:
                                     Border.all(width: 2, color: Colors.white)),
-                            child: const Center(child: Text("+2")),
+                            child: Center(
+                              child: Text(
+                                countAuthors(author),
+                              ),
+                            ),
                           ),
                         )
                       ],
@@ -170,14 +165,16 @@ class NewsItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        author,
+                        formatAuthor(author),
                         style: const TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w400),
                       ),
                       Row(
                         children: [
                           Text(
-                            source,
+                            source.name.length > 24
+                                ? '${source.name.substring(0, 24)}...'
+                                : source.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -218,7 +215,7 @@ class NewsItem extends StatelessWidget {
                   const SizedBox(width: 12),
                   IconButton(
                       onPressed: () {
-                       // shareArticle(Uri());
+                        // shareArticle(Uri());
                       },
                       icon: const Icon(Icons.share_outlined)),
                 ],
@@ -228,13 +225,5 @@ class NewsItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void shareArticle(Uri link) async {
-    // Check if the link is valid
-    if (await canLaunchUrl(link)) {
-      // Open the default share dialog
-      await launchUrl(link);
-    } else {}
   }
 }

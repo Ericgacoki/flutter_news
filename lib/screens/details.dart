@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:news_api/model/source.dart';
+import 'package:news_api/util/format_author.dart';
 
 import '../util/date.dart';
+import '../util/render_image.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen(
@@ -13,7 +16,9 @@ class DetailsScreen extends StatefulWidget {
       required this.author,
       required this.content});
 
-  final String imageUrl, title, source, publishedAt, author, content;
+  final String title, publishedAt, author, content;
+  final Source source;
+  final String? imageUrl;
   final bool isBookMarked;
 
   @override
@@ -37,7 +42,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   bottomRight: Radius.circular(24),
                 ),
                 image: DecorationImage(
-                    image: AssetImage(widget.imageUrl), fit: BoxFit.cover),
+                    image: renderImage(widget.imageUrl), fit: BoxFit.cover),
               ),
             ),
             Padding(
@@ -48,8 +53,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   Text(
                     widget.title,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -90,27 +95,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     height: 32,
                                     width: 32,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2, color: Colors.white),
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/profile.png"),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 24,
-                                  child: Container(
-                                    height: 32,
-                                    width: 32,
-                                    decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Colors.white,
                                         border: Border.all(
                                             width: 2, color: Colors.white)),
-                                    child: const Center(child: Text("+2")),
+                                    child: Center(child: Text(countAuthors(widget.author))),
                                   ),
                                 )
                               ],
@@ -121,14 +110,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.author,
+                                formatAuthor(widget.author),
                                 style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w400),
                               ),
                               Row(
                                 children: [
                                   Text(
-                                    widget.source,
+                                    widget.source.name,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
