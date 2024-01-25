@@ -305,24 +305,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(
+                    return const Center(
                         child: Text('Check your internet connection!'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No articles available!'));
+                    return const Center(child: Text('No articles available!'));
                   } else {
-                    // TODO: Add Ads in between???
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        Article article = snapshot.data![index];
-                        return ArticleItem(
-                          isBookMarked: false,
-                          imageUrl: article.urlToImage,
-                          title: article.title,
-                          source: article.source,
-                          publishedAt: article.publishedAt,
-                          author: article.author,
-                          content: article.content,
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Determine the number of columns based on screen width
+                        int columns = (constraints.maxWidth > 648) ? 2 : 1;
+
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: columns,
+                            crossAxisSpacing: 4,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: MediaQuery.of(context)
+                                    .size
+                                    .width /
+                                (columns *
+                                    270), // 270 is the approx height of Article Item
+                          ),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            Article article = snapshot.data![index];
+                            return ArticleItem(
+                              isBookMarked: false,
+                              imageUrl: article.urlToImage,
+                              title: article.title,
+                              source: article.source,
+                              publishedAt: article.publishedAt,
+                              author: article.author,
+                              content: article.content,
+                            );
+                          },
                         );
                       },
                     );
